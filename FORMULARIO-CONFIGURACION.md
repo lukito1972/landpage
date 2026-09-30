@@ -4,7 +4,7 @@ El formulario propio envía `POST /api/contact`. La función guarda la solicitud
 
 ## 1. Crear la tabla en Supabase
 
-En el proyecto Supabase correcto, abrir **SQL Editor** y ejecutar el contenido de `database/contact_requests.sql`.
+En el proyecto Supabase correcto, abrir **SQL Editor** y ejecutar el contenido de `database/contact_requests.sql`. Para habilitar la evidencia del consentimiento, ejecutar también `database/contact_requests_privacy.sql`.
 
 La tabla tiene RLS activado y no concede acceso a visitantes. La función de Vercel la utiliza desde el servidor con una clave secreta, que nunca se publica en la página.
 
@@ -28,6 +28,7 @@ Hacer una solicitud desde la URL de Preview y comprobar tres resultados:
 
 1. El visitante ve el mensaje de confirmación.
 2. Se crea una fila en `contact_requests`.
-3. Llega un correo a `arquitectura@breeam.mx` y permite responder directamente al visitante.
+3. La fila conserva la fecha UTC de aceptación y la versión del aviso.
+4. Llega un correo a `arquitectura@breeam.mx` con el resumen de la aceptación y permite responder directamente al visitante.
 
 No hay credenciales reales en estos archivos. El formulario muestra un mensaje de configuración hasta que las variables se agreguen en Vercel.
