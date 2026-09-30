@@ -63,14 +63,22 @@
   outline-offset: 4px;
 }
 
-.contact-whatsapp-button img {
+.contact-whatsapp-icon {
   display: block;
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  clip-path: circle(50%);
-  object-fit: contain;
+  overflow: hidden;
   flex: 0 0 72px;
+}
+
+.contact-whatsapp-icon img {
+  display: block;
+  width: 96px;
+  height: 96px;
+  max-width: none;
+  margin: -12px;
+  object-fit: contain;
 }
 
 @media (max-width: 991px) {
