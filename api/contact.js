@@ -1,6 +1,8 @@
 const MAX_BODY_BYTES = 32 * 1024;
 const RATE_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT = 5;
+const FORM_MIN_AGE_MS = 1500;
+const FORM_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+()\s-]{7,25}$/;
 const rateBuckets = new Map();
@@ -32,6 +34,9 @@ function getClientKey(request) {
 
 function isRateLimited(request) {
   const now = Date.now();
+  for (const [bucketKey, bucket] of rateBuckets) {
+    if (now - bucket.startedAt >= RATE_WINDOW_MS) rateBuckets.delete(bucketKey);
+  }
   const key = getClientKey(request);
   const current = rateBuckets.get(key);
   if (!current || now - current.startedAt >= RATE_WINDOW_MS) {
@@ -76,11 +81,22 @@ module.exports = async function contact(request, response) {
 
   if (clean(body.website, 200)) return response.status(200).json({ ok: true });
 
+  const formStartedAt = Number(body.formStartedAt);
+  const formAge = Date.now() - formStartedAt;
+  if (!Number.isFinite(formStartedAt) || formAge < FORM_MIN_AGE_MS || formAge > FORM_MAX_AGE_MS) {
+    return fail(response, 400, 'No se pudo validar la solicitud. Recarga la página e inténtalo de nuevo.');
+  }
+
   const firstName = clean(body.firstName, 80);
   const lastName = clean(body.lastName, 80);
   const phone = clean(body.phone, 25);
   const email = clean(body.email, 254).toLowerCase();
   const message = clean(body.message, 2000);
+
+  const urlCount = (message.match(/https?:\/\/|www\./gi) || []).length;
+  if (urlCount > 2 || /(.)\1{9,}/.test(message)) {
+    return fail(response, 400, 'Describe brevemente tu proyecto sin enlaces ni contenido repetido.');
+  }
 
   if (!firstName || !lastName || !PHONE_PATTERN.test(phone) || !EMAIL_PATTERN.test(email) || message.length < 10) {
     return fail(response, 400, 'Revisa tus datos y describe brevemente tu proyecto.');

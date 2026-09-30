@@ -35,3 +35,23 @@
 .arnauda-contact-form .form-status.is-loading { color: #52565e; }
 .arnauda-contact-form .form-status.is-success { color: #087443; }
 .arnauda-contact-form .form-status.is-error { color: #b42318; }
+.contact-whatsapp-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.35rem;
+  background: #25d366;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-whatsapp-button:hover,
+.contact-whatsapp-button:focus-visible {
+  background: #1da851;
+  color: #fff;
+  transform: translateY(-1px);
+}

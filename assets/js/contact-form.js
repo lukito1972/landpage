@@ -4,6 +4,7 @@
 
   var status = form.querySelector('[data-form-status]');
   var submit = form.querySelector('button[type="submit"]');
+  var formStartedAt = Date.now();
 
   function setStatus(message, type) {
     status.textContent = message;
@@ -19,6 +20,7 @@
     }
 
     var values = Object.fromEntries(new FormData(form).entries());
+    values.formStartedAt = String(formStartedAt);
     submit.disabled = true;
     setStatus('Enviando tu solicitud…', 'loading');
 
