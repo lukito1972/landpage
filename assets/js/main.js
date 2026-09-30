@@ -210,4 +210,37 @@ document.addEventListener('DOMContentLoaded', () => {
     aos_init();
   });
 
+  /**
+   * Conversion events
+   *
+   * Sends the same event to Vercel Analytics (when enabled) and to a
+   * Google-compatible dataLayer, without requiring either provider to load.
+   */
+  function trackConversion(name, details) {
+    const payload = Object.assign({ event: name }, details || {});
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+    if (typeof window.va === 'function') {
+      window.va('event', { name, ...details });
+    }
+  }
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
+    if (!link) return;
+
+    if (link.href.indexOf('https://wa.me/') === 0) {
+      trackConversion('whatsapp_click', { link_url: link.href });
+    } else if (link.href.indexOf('mailto:') === 0) {
+      trackConversion('email_click', { link_url: link.href });
+    }
+  });
+
+  const contactForm = document.querySelector('[data-contact-form]');
+  if (contactForm) {
+    contactForm.addEventListener('submit', () => {
+      trackConversion('contact_form_submit', { form_name: 'project_contact' });
+    });
+  }
+
 });
