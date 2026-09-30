@@ -38,30 +38,38 @@
 .contact-whatsapp-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
   margin-top: 0.5rem;
-  padding: 0.7rem 1rem;
-  border-radius: 0.35rem;
-  background: #25d366;
-  color: #fff;
-  font-weight: 600;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #25d366;
   text-decoration: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .contact-whatsapp-button:hover,
 .contact-whatsapp-button:focus-visible {
-  background: #1da851;
-  color: #fff;
-  transform: translateY(-1px);
+  background: transparent;
+  color: #25d366;
+  transform: scale(1.08);
+  filter: brightness(0.95);
+}
+
+.contact-whatsapp-button:focus-visible {
+  outline: 3px solid rgba(37, 211, 102, .4);
+  outline-offset: 4px;
 }
 
 .contact-whatsapp-button img {
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   object-fit: contain;
-  flex: 0 0 28px;
+  flex: 0 0 64px;
 }
 
 @media (max-width: 991px) {

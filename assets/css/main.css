@@ -1019,6 +1019,9 @@ section {
 
 .testimonials .testimonial-item .testimonial-img {
   width: 90px;
+  height: 90px;
+  object-fit: cover;
+  object-position: center;
   border-radius: 10px;
   border: 6px solid #fff;
   position: absolute;
