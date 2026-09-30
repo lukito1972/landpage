@@ -1,6 +1,9 @@
 const MAX_BODY_BYTES = 32 * 1024;
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+const RATE_LIMIT = 5;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+()\s-]{7,25}$/;
+const rateBuckets = new Map();
 
 function getBody(request) {
   if (typeof request.body === 'string') return JSON.parse(request.body || '{}');
@@ -18,13 +21,36 @@ function escapeHtml(value) {
 }
 
 function fail(response, status, message) {
+  response.setHeader('Cache-Control', 'no-store');
   return response.status(status).json({ message: message });
+}
+
+function getClientKey(request) {
+  const forwarded = request.headers['x-forwarded-for'];
+  return (forwarded ? String(forwarded).split(',')[0] : request.headers['x-real-ip'] || 'unknown').trim();
+}
+
+function isRateLimited(request) {
+  const now = Date.now();
+  const key = getClientKey(request);
+  const current = rateBuckets.get(key);
+  if (!current || now - current.startedAt >= RATE_WINDOW_MS) {
+    rateBuckets.set(key, { startedAt: now, count: 1 });
+    return false;
+  }
+  current.count += 1;
+  return current.count > RATE_LIMIT;
 }
 
 module.exports = async function contact(request, response) {
   if (request.method !== 'POST') {
     response.setHeader('Allow', 'POST');
     return fail(response, 405, 'Método no permitido.');
+  }
+
+  if (isRateLimited(request)) {
+    response.setHeader('Retry-After', String(Math.ceil(RATE_WINDOW_MS / 1000)));
+    return fail(response, 429, 'Has enviado demasiadas solicitudes. Inténtalo más tarde o escríbenos por WhatsApp.');
   }
 
   if (Number(request.headers['content-length'] || 0) > MAX_BODY_BYTES) {

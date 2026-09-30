@@ -804,15 +804,30 @@ section {
   font-size: 48px;
 }
 
-.features .nav-link h4 {
+.features .nav-link h4,
+.features .nav-link .tab-label {
   font-size: 18px;
   font-weight: 600;
   margin: 0;
 }
 
 @media (max-width: 575px) {
-  .features .nav-link h4 {
+  .features .nav-link h4,
+  .features .nav-link .tab-label {
     font-size: 16px;
+  }
+}
+
+@media (max-width: 575px) {
+  .features .nav-tabs .nav-item {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .features .nav-link {
+    min-height: 72px;
+    padding: 12px 8px;
+    text-align: center;
   }
 }
 
