@@ -55,3 +55,17 @@
   color: #fff;
   transform: translateY(-1px);
 }
+
+.contact-whatsapp-button img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex: 0 0 28px;
+}
+
+@media (max-width: 991px) {
+  .get-started .content {
+    padding-top: 0;
+  }
+}
