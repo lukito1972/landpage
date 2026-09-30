@@ -87,6 +87,10 @@ module.exports = async function contact(request, response) {
     return fail(response, 400, 'No se pudo validar la solicitud. Recarga la página e inténtalo de nuevo.');
   }
 
+  if (body.privacyConsent !== true && body.privacyConsent !== 'true' && body.privacyConsent !== 'on') {
+    return fail(response, 400, 'Debes aceptar el Aviso de privacidad para enviar tu solicitud.');
+  }
+
   const firstName = clean(body.firstName, 80);
   const lastName = clean(body.lastName, 80);
   const phone = clean(body.phone, 25);

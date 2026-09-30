@@ -1,0 +1,65 @@
+.privacy-page {
+  background: #f8f9fa;
+}
+
+.privacy-page .privacy-main {
+  padding: 4rem 0 5rem;
+}
+
+.privacy-page .privacy-card {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .06);
+}
+
+.privacy-page h1 {
+  margin: 0 0 1rem;
+  color: #52565e;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+}
+
+.privacy-page h2 {
+  margin: 2.25rem 0 .75rem;
+  color: #52565e;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.privacy-page p,
+.privacy-page li {
+  color: #52565e;
+  line-height: 1.7;
+}
+
+.privacy-page ul,
+.privacy-page ol {
+  padding-left: 1.35rem;
+}
+
+.privacy-page .draft-notice {
+  margin: 0 0 2rem;
+  padding: 1rem 1.15rem;
+  border-left: 4px solid #febb00;
+  background: #fff8df;
+  color: #604900;
+  font-size: .95rem;
+}
+
+.privacy-page .pending-note {
+  padding: 1rem 1.15rem;
+  border: 1px solid #e5e7eb;
+  background: #f8f9fa;
+  font-size: .92rem;
+}
+
+.privacy-page .privacy-meta {
+  color: #6c757d;
+  font-size: .9rem;
+}
+
+.privacy-page a {
+  color: #8a5d00;
+}
