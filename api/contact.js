@@ -3,6 +3,7 @@ const RATE_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT = 5;
 const FORM_MIN_AGE_MS = 1500;
 const FORM_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const PRIVACY_NOTICE_VERSION = '2026-09-30-revision-1';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+()\s-]{7,25}$/;
 const rateBuckets = new Map();
@@ -87,6 +88,10 @@ module.exports = async function contact(request, response) {
     return fail(response, 400, 'No se pudo validar la solicitud. Recarga la página e inténtalo de nuevo.');
   }
 
+  if (body.privacyConsent !== true && body.privacyConsent !== 'true' && body.privacyConsent !== 'on') {
+    return fail(response, 400, 'Debes aceptar el Aviso de privacidad para enviar tu solicitud.');
+  }
+
   const firstName = clean(body.firstName, 80);
   const lastName = clean(body.lastName, 80);
   const phone = clean(body.phone, 25);
@@ -101,6 +106,8 @@ module.exports = async function contact(request, response) {
   if (!firstName || !lastName || !PHONE_PATTERN.test(phone) || !EMAIL_PATTERN.test(email) || message.length < 10) {
     return fail(response, 400, 'Revisa tus datos y describe brevemente tu proyecto.');
   }
+
+  const privacyConsentAcceptedAt = new Date().toISOString();
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -118,6 +125,8 @@ module.exports = async function contact(request, response) {
     phone: phone,
     email: email,
     message: message,
+    privacy_consent_accepted_at: privacyConsentAcceptedAt,
+    privacy_notice_version: PRIVACY_NOTICE_VERSION,
     source: 'sitio_web',
     notification_status: 'pending'
   };
@@ -146,6 +155,8 @@ module.exports = async function contact(request, response) {
     const safePhone = escapeHtml(phone);
     const safeEmail = escapeHtml(email);
     const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
+    const safeConsentAcceptedAt = escapeHtml(privacyConsentAcceptedAt);
+    const safePrivacyNoticeVersion = escapeHtml(PRIVACY_NOTICE_VERSION);
 
     stage = 'enviar notificación con Resend';
     const emailResponse = await fetch('https://api.resend.com/emails', {
@@ -164,7 +175,10 @@ module.exports = async function contact(request, response) {
           '<p><strong>Nombre:</strong> ' + safeName + '</p>' +
           '<p><strong>Teléfono:</strong> ' + safePhone + '</p>' +
           '<p><strong>Correo:</strong> ' + safeEmail + '</p>' +
-          '<p><strong>Proyecto:</strong><br>' + safeMessage + '</p>'
+          '<p><strong>Proyecto:</strong><br>' + safeMessage + '</p>' +
+          '<hr><p><strong>Aviso de privacidad:</strong> aceptado</p>' +
+          '<p><strong>Fecha de aceptación registrada por el servidor:</strong> ' + safeConsentAcceptedAt + '</p>' +
+          '<p><strong>Versión del aviso:</strong> ' + safePrivacyNoticeVersion + '</p>'
       })
     });
 
