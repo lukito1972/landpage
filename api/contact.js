@@ -59,12 +59,20 @@ module.exports = async function contact(request, response) {
     return fail(response, 429, 'Has enviado demasiadas solicitudes. Inténtalo más tarde o escríbenos por WhatsApp.');
   }
 
+  const contentType = String(request.headers['content-type'] || '').toLowerCase();
+  if (!contentType.startsWith('application/json')) {
+    return fail(response, 415, 'Formato de solicitud no permitido.');
+  }
+
   if (Number(request.headers['content-length'] || 0) > MAX_BODY_BYTES) {
     return fail(response, 413, 'La solicitud es demasiado grande.');
   }
 
   const origin = request.headers.origin;
   const host = request.headers['x-forwarded-host'] || request.headers.host;
+  if (!origin || !host) {
+    return fail(response, 403, 'Origen no permitido.');
+  }
   if (origin && host) {
     try {
       if (new URL(origin).host !== host) return fail(response, 403, 'Origen no permitido.');
